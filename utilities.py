@@ -84,3 +84,36 @@ def label_top_links(test_set, scores, n=100):
     top_links = find_top_links(test_set, scores, n)
     labels = [1 if link in top_links else 0 for link in test_set]
     return labels
+
+
+def write_top_links(top_links, file_name="top_links.csv"):
+    """
+    Writes the top links to a csv file.
+
+    Parameters:
+        top_links: List of links to write, where each link is given as a tuple (start_node, end_node).
+        file_name: Name of file to write to.
+    """
+    file = open(file_name, "w")
+
+    for i in range(len(top_links)):
+        file.write(str(top_links[i][0]) + "," + str(top_links[i][1]))
+        if i != len(top_links) - 1:
+            file.write("\n")
+
+
+def write_full_results(labels, file_name="full_links_results.csv"):
+    """
+    Writes the labels for each link in the test set in order.
+
+    Parameters:
+        labels: List of labels for each link, where 1 indicates the link is predicted to exist and 0
+                indicates the link likely does not exist.
+        file_name: Name of file to write to.
+    """
+    file = open(file_name, "w")
+    file.write("EdgeID,label\n")
+    for i in range(len(labels)):
+        file.write(str(i + 1) + "," + str(labels[i]))
+        if i != len(labels) - 1:
+            file.write("\n")
