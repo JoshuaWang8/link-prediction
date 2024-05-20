@@ -49,6 +49,28 @@ def cosine_similarity(graph, test_set):
     return similarity_scores
 
 
+def preferential_attachment(graph, test_set):
+    """
+    Computes preferential attachment score on test links.
+
+    Parameters:
+        graph: Existing graph acting as the training set.
+        test_set: List of links to predict on.
+
+    Returns:
+        pref_score: List of preferential attachment scores for each link in the test set.
+    """
+    pref_score = []
+
+    for node_a, node_b in test_set:
+        a_neighbours = set([n for n in graph[node_a]])
+        b_neighbours = set([n for n in graph[node_b]])
+
+        pref_score.append(len(a_neighbours) * len(b_neighbours))
+
+    return pref_score
+
+
 def adamic_adar_index(graph, test_set):
     """
     Computes the Adamic-Adar index between all nodes in the test set. Quantifies the similarity

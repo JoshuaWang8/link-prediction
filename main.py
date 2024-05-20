@@ -23,6 +23,15 @@ def cosine_scoring(train_graph, test_list):
     write_full_results(label_top_links(test_list, sim_score))
 
 
+def preferential_attachment_scoring(train_graph, test_list):
+    """
+    Performs link prediction using preferential attachment. - 0.84700
+    """
+    pref_score = preferential_attachment(train_graph, test_list)
+    write_top_links(find_top_links(test_list, pref_score))
+    write_full_results(label_top_links(test_list, pref_score))
+
+
 def adamic_adar_scoring(train_graph, test_list):
     """
     Performs link prediction using Adamic-Adar Index. - 0.90300
@@ -115,3 +124,6 @@ if __name__ == "__main__":
 
     # ##### Cosine Similarity Scoring #####
     # cosine_scoring(train_graph, test_list)
+
+    ##### Preferential Attachment Scoring #####
+    preferential_attachment_scoring(train_graph, test_list)
