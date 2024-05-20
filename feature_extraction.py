@@ -2,17 +2,17 @@ import networkx as nx
 import numpy as np
 import pandas as pd
 import random
+from sklearn.preprocessing import StandardScaler
 
 
 def extract_node_features(graph):
     """
     Extracts features for all nodes in a graph. Features that are considered are:
-        - Degree
-        - Normalized degree
-        - Degree centrality
         - Closeness centrality
         - Betweenness centrality
         - PageRank
+        - Eigenvector centrality
+        - Katz centrality
 
     Parameters:
         graph: Graph for which all nodes will have their features extracted.
@@ -20,26 +20,31 @@ def extract_node_features(graph):
     Returns:
         all_features: Dictionary with node as keys and a list of features as the value.
     """
-    degrees = dict(graph.degree())
-    max_degree = max(degrees.values())
-    normalized_degrees = {node: degree / max_degree for node, degree in degrees.items()}
-
-    degree_centralities = nx.degree_centrality(graph)
     closeness_centralities = nx.closeness_centrality(graph)
     betweenness_centralities = nx.betweenness_centrality(graph)
     pageranks = nx.pagerank(graph)
+    eigenvector_centralities = nx.eigenvector_centrality(graph)
+    katz_centralities = nx.katz_centrality_numpy(graph)
+
     
     all_features = {}
 
-    for node in graph.nodes():
+    for node in sorted(graph.nodes()):
         all_features[node] = [
-            degrees[node],
-            normalized_degrees[node],
-            degree_centralities[node],
             closeness_centralities[node],
             betweenness_centralities[node],
-            pageranks[node]
+            pageranks[node],
+            eigenvector_centralities[node],
+            katz_centralities[node],
         ]
+
+    # Normalize features
+    scaler = StandardScaler()
+    feature_matrix = np.array(list(all_features.values()))
+    scaled_features = scaler.fit_transform(feature_matrix)
+    
+    for i, node in enumerate(sorted(graph.nodes())):
+        all_features[node] = scaled_features[i]
     
     return all_features
 
@@ -74,3 +79,26 @@ def create_labelled_pairs(graph):
             pair_labels.loc[len(pair_labels)] = [node_a, random_node, 0]
 
     return pair_labels
+
+
+def get_adjacency_matrix(graph):
+    """
+    Creates adjacency matrix.
+
+    Parameters:
+        graph: Graph for which matrix will be created.
+
+    Returns:
+        A: Adjacency matrix.
+    """
+    graph_nodes = sorted(graph.nodes())
+    A = np.zeros((len(graph.nodes()), len(graph.nodes())))
+
+    # Populate the adjacency matrix
+    for i in graph_nodes:
+        neighbor_list = list(graph.neighbors(i))
+        for j in graph_nodes:
+            if j in neighbor_list:
+                A[i][j] = 1
+
+    return A
