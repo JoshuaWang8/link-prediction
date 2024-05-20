@@ -2,6 +2,7 @@ import torch
 from utilities import *
 from neighbourhood_prediction import *
 from feature_extraction import *
+from random_walk_prediction import *
 from gcn import *
 
 
@@ -39,6 +40,15 @@ def adamic_adar_scoring(train_graph, test_list):
     aa_index = adamic_adar_index(train_graph, test_list)
     write_top_links(find_top_links(test_list, aa_index))
     write_full_results(label_top_links(test_list, aa_index))
+
+
+def katz_scoring(train_graph, test_list):
+    """
+    Performs link prediction using Katz measure. - 0.83300
+    """
+    scores = katz_measure(train_graph, test_list)
+    write_top_links(find_top_links(test_list, scores))
+    write_full_results(label_top_links(test_list, scores))
 
 
 def GCN_scoring(train_graph, test_list):
@@ -125,5 +135,8 @@ if __name__ == "__main__":
     # ##### Cosine Similarity Scoring #####
     # cosine_scoring(train_graph, test_list)
 
-    ##### Preferential Attachment Scoring #####
-    preferential_attachment_scoring(train_graph, test_list)
+    # ##### Preferential Attachment Scoring #####
+    # preferential_attachment_scoring(train_graph, test_list)
+
+    ##### Katz Measure Scoring #####
+    katz_scoring(train_graph, test_list)
