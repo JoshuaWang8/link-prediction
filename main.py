@@ -5,9 +5,18 @@ from feature_extraction import *
 from gcn import *
 
 
+def jaccard_scoring(train_graph, test_list):
+    """
+    Performs link prediction using Adamic-Adar Index. - 0.90300
+    """
+    sim_score = jaccard_similarity(train_graph, test_list)
+    write_top_links(find_top_links(test_list, sim_score))
+    write_full_results(label_top_links(test_list, sim_score))
+
+
 def adamic_adar_scoring(train_graph, test_list):
     """
-    Performs link prediction using Adamic-Adar Index.
+    Performs link prediction using Adamic-Adar Index. - 0.90300
     """
     aa_index = adamic_adar_index(train_graph, test_list)
     write_top_links(find_top_links(test_list, aa_index))
@@ -16,7 +25,7 @@ def adamic_adar_scoring(train_graph, test_list):
 
 def GCN_scoring(train_graph, test_list):
     """
-    Performs link prediction using GCN and binary classification.
+    Performs link prediction using GCN and binary classification. - 0.85300
     """
     # Create pairs of data and get features for each node
     train_pairs = create_labelled_pairs(train_graph)
@@ -46,7 +55,7 @@ def GCN_scoring(train_graph, test_list):
 
 def AA_GCN_scoring(train_graph, test_list):
     """
-    Performs link prediction using the average score between GCN and Adamic-Adar Index.
+    Performs link prediction using the average score between GCN and Adamic-Adar Index. - 0.90500
     """
     # Create pairs of data and get features for each node
     train_pairs = create_labelled_pairs(train_graph)
@@ -83,11 +92,14 @@ if __name__ == "__main__":
     test_list = load_test_set_as_list(test_file)
 
 
-    ##### Adamic-Adar Index Scoring #####
-    adamic_adar_scoring(train_graph, test_list)
+    # ##### Adamic-Adar Index Scoring #####
+    # adamic_adar_scoring(train_graph, test_list)
 
-    ##### GCN Link Scoring #####
-    GCN_scoring(train_graph, test_list)
+    # ##### GCN Link Scoring #####
+    # GCN_scoring(train_graph, test_list)
+
+    # ##### Adamic-Adar Index Combined with GCN #####
+    # AA_GCN_scoring(train_graph, test_list)
 
     ##### Adamic-Adar Index Combined with GCN #####
-    AA_GCN_scoring(train_graph, test_list)
+    jaccard_scoring(train_graph, test_list)
