@@ -7,9 +7,18 @@ from gcn import *
 
 def jaccard_scoring(train_graph, test_list):
     """
-    Performs link prediction using Adamic-Adar Index. - 0.90300
+    Performs link prediction using Jaccard Similarity. - 0.90300
     """
     sim_score = jaccard_similarity(train_graph, test_list)
+    write_top_links(find_top_links(test_list, sim_score))
+    write_full_results(label_top_links(test_list, sim_score))
+
+
+def cosine_scoring(train_graph, test_list):
+    """
+    Performs link prediction using Cosine Similarity. - 0.90300
+    """
+    sim_score = cosine_similarity(train_graph, test_list)
     write_top_links(find_top_links(test_list, sim_score))
     write_full_results(label_top_links(test_list, sim_score))
 
@@ -101,5 +110,8 @@ if __name__ == "__main__":
     # ##### Adamic-Adar Index Combined with GCN #####
     # AA_GCN_scoring(train_graph, test_list)
 
-    ##### Adamic-Adar Index Combined with GCN #####
-    jaccard_scoring(train_graph, test_list)
+    # ##### Jaccard Similarity Scoring #####
+    # jaccard_scoring(train_graph, test_list)
+
+    # ##### Cosine Similarity Scoring #####
+    # cosine_scoring(train_graph, test_list)

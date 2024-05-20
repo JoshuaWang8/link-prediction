@@ -1,4 +1,4 @@
-from math import log
+from math import log, sqrt
 
 
 def jaccard_similarity(graph, test_set):
@@ -21,6 +21,30 @@ def jaccard_similarity(graph, test_set):
         shared_neighbours = list(a_neighbours.intersection(b_neighbours))
 
         similarity_scores.append(len(shared_neighbours) / (len(a_neighbours) + len(b_neighbours)))
+
+    return similarity_scores
+
+
+def cosine_similarity(graph, test_set):
+    """
+    Computes Cosine Similarity between number of shared nodes.
+
+    Parameters:
+        graph: Existing graph acting as the training set.
+        test_set: List of links to predict on.
+
+    Returns:
+        similarity_scores: List of Cosine similarity scores for each link in the test set.
+    """
+    similarity_scores = []
+
+    for node_a, node_b in test_set:
+        a_neighbours = set([n for n in graph[node_a]])
+        b_neighbours = set([n for n in graph[node_b]])
+
+        shared_neighbours = list(a_neighbours.intersection(b_neighbours))
+
+        similarity_scores.append(len(shared_neighbours) / sqrt((len(a_neighbours) * len(b_neighbours))))
 
     return similarity_scores
 
