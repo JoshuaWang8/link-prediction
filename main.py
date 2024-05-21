@@ -5,50 +5,7 @@ from feature_extraction import *
 from random_walk_prediction import *
 from gcn import *
 
-
-def jaccard_scoring(train_graph, test_list):
-    """
-    Performs link prediction using Jaccard Similarity. - 0.90300
-    """
-    sim_score = jaccard_similarity(train_graph, test_list)
-    write_top_links(find_top_links(test_list, sim_score))
-    write_full_results(label_top_links(test_list, sim_score))
-
-
-def cosine_scoring(train_graph, test_list):
-    """
-    Performs link prediction using Cosine Similarity. - 0.90300
-    """
-    sim_score = cosine_similarity(train_graph, test_list)
-    write_top_links(find_top_links(test_list, sim_score))
-    write_full_results(label_top_links(test_list, sim_score))
-
-
-def preferential_attachment_scoring(train_graph, test_list):
-    """
-    Performs link prediction using preferential attachment. - 0.84700
-    """
-    pref_score = preferential_attachment(train_graph, test_list)
-    write_top_links(find_top_links(test_list, pref_score))
-    write_full_results(label_top_links(test_list, pref_score))
-
-
-def adamic_adar_scoring(train_graph, test_list):
-    """
-    Performs link prediction using Adamic-Adar Index. - 0.90300
-    """
-    aa_index = adamic_adar_index(train_graph, test_list)
-    write_top_links(find_top_links(test_list, aa_index))
-    write_full_results(label_top_links(test_list, aa_index))
-
-
-def katz_scoring(train_graph, test_list):
-    """
-    Performs link prediction using Katz measure. - 0.83300
-    """
-    scores = katz_measure(train_graph, test_list)
-    write_top_links(find_top_links(test_list, scores))
-    write_full_results(label_top_links(test_list, scores))
+import networkx as nx
 
 
 def GCN_scoring(train_graph, test_list):
@@ -78,7 +35,8 @@ def GCN_scoring(train_graph, test_list):
 
     # Predicting
     predictions = model_predict(model, test_list, node_embeddings)
-    write_full_results(label_top_links(test_list, predictions), file_name="full_results_GCN.csv")
+    
+    return predictions
 
 
 def AA_GCN_scoring(train_graph, test_list):
@@ -109,7 +67,8 @@ def AA_GCN_scoring(train_graph, test_list):
     # Predicting
     predictions = model_predict(model, test_list, node_embeddings)
     aa_index = adamic_adar_index(train_graph, test_list)
-    write_full_results(label_top_links(test_list, (torch.tensor(aa_index).unsqueeze(1) + predictions) / 2), file_name="full_results_AA_GCN.csv")
+
+    return (torch.tensor(aa_index).unsqueeze(1) + predictions) / 2
 
 
 if __name__ == "__main__":
@@ -120,23 +79,29 @@ if __name__ == "__main__":
     test_list = load_test_set_as_list(test_file)
 
 
-    # ##### Adamic-Adar Index Scoring #####
-    # adamic_adar_scoring(train_graph, test_list)
-
     # ##### GCN Link Scoring #####
-    # GCN_scoring(train_graph, test_list)
+    # scores = GCN_scoring(train_graph, test_list)
 
     # ##### Adamic-Adar Index Combined with GCN #####
-    # AA_GCN_scoring(train_graph, test_list)
+    # scores = AA_GCN_scoring(train_graph, test_list)
 
-    # ##### Jaccard Similarity Scoring #####
-    # jaccard_scoring(train_graph, test_list)
+  
+    # ##### Jaccard Similarity Scoring ##### - 0.90300
+    # scores = jaccard_similarity(train_graph, test_list)
 
-    # ##### Cosine Similarity Scoring #####
-    # cosine_scoring(train_graph, test_list)
+    # ##### Cosine Similarity Scoring ##### - 0.90300
+    # scores = cosine_similarity(train_graph, test_list)
 
-    # ##### Preferential Attachment Scoring #####
-    # preferential_attachment_scoring(train_graph, test_list)
+    # ##### Preferential Attachment Scoring #####  0.84700
+    # scores = preferential_attachment(train_graph, test_list)
 
-    ##### Katz Measure Scoring #####
-    katz_scoring(train_graph, test_list)
+    # ##### Adamic-Adar Index Scoring ##### - 0.90300
+    # scores = adamic_adar_index(train_graph, test_list)
+
+    # ##### Katz Measure Scoring ##### - 0.83300
+    # scores = katz_measure(train_graph, test_list)
+
+
+    ##### Creating restuls files #####
+    # write_top_links(find_top_links(test_list, scores))
+    write_full_results(label_top_links(test_list, scores),  file_name="test.csv")
