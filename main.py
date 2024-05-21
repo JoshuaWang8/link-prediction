@@ -2,7 +2,7 @@ import torch
 from utilities import *
 from neighbourhood_prediction import *
 from feature_extraction import *
-from random_walk_prediction import *
+from multi_hop_prediction import *
 from gcn import *
 from embedding_distances import *
 import numpy as np
@@ -81,5 +81,5 @@ if __name__ == "__main__":
 
 
     ##### Creating results files - change scoring method as required #####
-    write_top_links(find_top_links(test_list, embed_dist_scores), file_name="combined_scaled_scores_top_100.csv")
+    write_top_links(find_top_links(test_list, scaled_combined_scores), file_name="combined_scaled_scores_top_100.csv")
     write_full_results(label_top_links(test_list, scaled_combined_scores),  file_name="combined_scaled_scores_full.csv")
