@@ -6,13 +6,13 @@ from feature_extraction import get_adjacency_matrix
 from sklearn.model_selection import train_test_split
 
 
-def get_node_embeddings(graph, node_features):
+def get_node_embeddings(graph, node_features_dict):
     """
     Gets embeddings for all nodes in graph.
 
     Parameters:
         graph: Graph for which features will be obtained.
-        node_features: Features for all nodes as nested lists.
+        node_features_dict: Dictionary of features for all nodes.
 
     Returns:
         Embeddings: Nested lists of embeddings for each node.
@@ -20,13 +20,19 @@ def get_node_embeddings(graph, node_features):
     adjacency_matrix = get_adjacency_matrix(graph)
     adjacency_matrix = adjacency_matrix + np.identity(adjacency_matrix.shape[0]) # Add self-loops
 
+    # All features as a matrix
+    all_features = []
+    for _, value in node_features_dict.items():
+        all_features.append(value)
+    all_features = torch.tensor(all_features)
+
     # Inverse degree matrix for normalisation
     D = np.array(np.sum(adjacency_matrix, axis=0))
     D = np.matrix(np.diag(D))
 
     adjacency_matrix = D**-1 * adjacency_matrix
 
-    return F.relu(torch.matmul(torch.tensor(adjacency_matrix), node_features))
+    return F.relu(torch.matmul(torch.tensor(adjacency_matrix), all_features))
 
 
 def create_datasets(node_embeddings, train_pairs):
