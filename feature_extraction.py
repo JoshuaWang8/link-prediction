@@ -102,3 +102,12 @@ def get_adjacency_matrix(graph):
                 A[i][j] = 1
 
     return A
+
+
+def minmax_scale(arr):
+    min_val = np.min(arr)
+    max_val = np.max(arr)
+    # Avoid division by zero if all elements are the same
+    if min_val == max_val:
+        return np.zeros_like(arr)
+    return (arr - min_val) / (max_val - min_val)
