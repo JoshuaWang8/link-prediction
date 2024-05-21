@@ -152,7 +152,7 @@ def model_predict(model, test_list, node_embeddings):
         model.eval()
         test_output = model(test_examples)
         
-        return test_output
+        return [prediction[0] for prediction in test_output.tolist()]
 
 
 class LinkPredictionModel(nn.Module):
