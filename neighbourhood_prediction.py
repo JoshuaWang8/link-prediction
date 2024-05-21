@@ -19,8 +19,9 @@ def jaccard_similarity(graph, test_set):
         b_neighbours = set([n for n in graph[node_b]])
 
         shared_neighbours = list(a_neighbours.intersection(b_neighbours))
+        union_neighbours = list(a_neighbours.union(b_neighbours))
 
-        similarity_scores.append(len(shared_neighbours) / (len(a_neighbours) + len(b_neighbours)))
+        similarity_scores.append(len(shared_neighbours) / len(union_neighbours))
 
     return similarity_scores
 
