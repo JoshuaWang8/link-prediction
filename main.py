@@ -5,6 +5,7 @@ from feature_extraction import *
 from random_walk_prediction import *
 from gcn import *
 from embedding_distances import *
+import numpy as np
 
 
 def GCN_scoring(node_embeddings, test_list, train_pairs):
@@ -37,20 +38,20 @@ if __name__ == "__main__":
     test_list = load_test_set_as_list(test_file)
 
 
-    ##### Jaccard Similarity Scoring ##### - 0.90300
-    # jaccard_scores = jaccard_similarity(train_graph, test_list)
+    ##### Jaccard Similarity Scoring (90.30% Testing Accuracy) #####
+    jaccard_scores = jaccard_similarity(train_graph, test_list)
 
-    ##### Cosine Similarity Scoring ##### - 0.90300
-    # cosine_scores = cosine_similarity(train_graph, test_list)
+    ##### Cosine Similarity Scoring (90.30% Testing Accuracy) #####
+    cosine_scores = cosine_similarity(train_graph, test_list)
 
-    ##### Preferential Attachment Scoring #####  0.84700
-    # pref_attach_scores = preferential_attachment(train_graph, test_list)
+    ##### Preferential Attachment Scoring (84.70% Testing Accuracy) #####
+    pref_attach_scores = preferential_attachment(train_graph, test_list)
 
-    ##### Adamic-Adar Index Scoring ##### - 0.90300
-    # aa_scores = adamic_adar_index(train_graph, test_list)
+    ##### Adamic-Adar Index Scoring (90.30% Testing Accuracy) #####
+    aa_scores = adamic_adar_index(train_graph, test_list)
 
-    ##### Katz Measure Scoring ##### - 0.83300
-    # katz_scores = katz_measure(train_graph, test_list)
+    ##### Katz Measure Scoring (83.30% Testing Accuracy) #####
+    katz_scores = katz_measure(train_graph, test_list)
 
 
     # Create pairs of data and get features for each node (NECESSARY FOR METHODS BELOW)
@@ -58,16 +59,27 @@ if __name__ == "__main__":
     features_dict = extract_node_features(train_graph)
     node_embeddings = get_node_embeddings(train_graph, features_dict)
 
-    ##### GCN Link Scoring ##### - 0.85300
-    # gcn_scores = GCN_scoring(node_embeddings, test_list, train_pairs)
+    ##### GCN Link Scoring (85.30% Testing Accuracy) #####
+    gcn_scores = GCN_scoring(node_embeddings, test_list, train_pairs)
 
-    ##### Embedding Distance Comparison ##### - 0.82700
+    ##### Embedding Distance Comparison (82.70% Testing Accuracy) #####
     embed_dist_scores = embedding_distance_scores(node_embeddings, test_list)
 
-    ##### Adamic-Adar Index Combined with GCN ##### - 0.90500
-    # gcn_aa_scores = (gcn_scores + torch.tensor(aa_scores).unsqueeze(1))/2
+    ##### Summing Jaccard, Adamic-Adar, GCN scores (90.90% Testing Accuracy) #####
+    combined_scores = [jaccard_scores[i] + aa_scores[i] + gcn_scores[i] for i in range(len(test_list))]
+
+    ##### Summing All Scoring Methods after Scaling (91.50% Testing Accuracy) #####
+    # Scale all scores except GCN output (since GCN is using binary cross entropy and outputs will be between 0 and 1)
+    jaccard_scores = minmax_scale(jaccard_scores)
+    cosine_scores = minmax_scale(cosine_scores)
+    pref_attach_scores = minmax_scale(pref_attach_scores)
+    aa_scores = minmax_scale(aa_scores)
+    katz_scores = minmax_scale(katz_scores)
+    embed_dist_scores = minmax_scale(embed_dist_scores)
+
+    scaled_combined_scores = [jaccard_scores[i] * 1.5 + cosine_scores[i] * 1.5 + pref_attach_scores[i] + aa_scores[i] * 1.5 + katz_scores[i] + embed_dist_scores[i] + gcn_scores[i] for i in range(len(test_list))]
 
 
     ##### Creating results files - change scoring method as required #####
-    # write_top_links(find_top_links(test_list, scores))
-    write_full_results(label_top_links(test_list, embed_dist_scores),  file_name="test.csv")
+    write_top_links(find_top_links(test_list, embed_dist_scores), file_name="combined_scaled_scores_top_100.csv")
+    write_full_results(label_top_links(test_list, scaled_combined_scores),  file_name="combined_scaled_scores_full.csv")
