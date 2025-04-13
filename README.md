@@ -35,15 +35,15 @@ Other versions of the above libraries may also be sufficient. Next, in the comma
 The first category of methodologies explored for link prediction were adjacency-based methods, which perform by observing the number of shared nodes between two nodes. From this category of methodologies, the implemented prediction techniques included the Jaccard similarity, Cosine similarity and the Adamic-Adar index. With $N(X)$ denoting the neighbors of node $X$ and $|N(X)|$ denoting the number of neighbors for node $X$, the formulas for each of the implemented adjacency-based methods are:
 
 $$
-jaccard\_similarity = \frac{|N(A)\cap N(B)|}{|N(A)\cup N(B)|}
+\text{jaccard similarity} = \frac{|N(A)\cap N(B)|}{|N(A)\cup N(B)|}
 $$
 
 $$
-cosine\_similarity = \frac{|N(A)\cap N(B)|}{\sqrt{|N(A)||N(B)|}}
+\text{cosine similarity} = \frac{|N(A)\cap N(B)|}{\sqrt{|N(A)||N(B)|}}
 $$
 
 $$
-adamic\_adar\_index = \sum_{z\in N(A)\cap N(B)}{\frac{1}{log|N(z)|}}
+\text{adamic adar index} = \sum_{z\in N(A)\cap N(B)}{\frac{1}{log|N(z)|}}
 $$
 
 Jaccard similarity works by considering how many neighbors are shared by nodes A and B out of the total number of neighbors possible, and where there is a large number of neighbors being shared between two nodes, it would mean that the two nodes are similar and will therefore be more likely to have a link. Meanwhile, cosine similarity measures the similarity between nodes by dividing the number of shared neighbors by $\sqrt{|N(A)||N(B)|}$ to normalize the resulting value into the range of [0, 1]. The Adamic-Adar index also performs similarly by considering the number of shared neighbors between two nodes, though it instead sums the reciprocal log of the degrees of the shared neighbors. By doing this, instead of only considering which nodes are shared like the Jaccard and cosine similarities, the Adamic-Adar index is able to penalize the similarity when two nodes are connected to extremely popular nodes. This is an important feature since, in social networks, there are often more popular/influential nodes such as celebrities, and many nodes may be connected to these. Thus, if the majority of shared neighbors between two nodes are “popular” nodes with high degree, it may not necessarily mean that the two nodes are similar to each other and should be connected. For all three of these methods, a greater score indicates a more likely link.
@@ -51,7 +51,7 @@ Jaccard similarity works by considering how many neighbors are shared by nodes A
 In contrast to the methods which consider the number of shared nodes, a method that approaches the problem in a different way is preferential attachment. Preferential attachment is based off evidence found by researchers that co-authorship of papers is correlated with the product of the neighborhood sizes of each node. In this technique, it is assumed that new links will likely be formed between those who are more popular, and the scoring is formulated as:
 
 $$
-preferential\_attachment = |N(A)||N(B)|
+\text{preferential attachment} = |N(A)||N(B)|
 $$
 
 Here, the number of neighbors for each node A and B in the link are multiplied, and a larger preferential attachment score would indicate a more likely link.
@@ -89,7 +89,7 @@ Using these embeddings, two methods were applied. The first was by concatenating
 The second method making use of the node embeddings was by considering the differences between embeddings. Since the embeddings could represent each node, it would be logical that nodes with similar embeddings would be more likely to have a link, whilst embeddings more different from each other would be less likely to have a link. Therefore, this method took the Euclidean distance between the embeddings of nodes, and considered nodes with smaller distances to be more likely to have a link. The Euclidean distance was calculated as:
 
 $$
-distance = \sqrt{\sum{(embedding_1 - embedding_2)^2}}
+\text{distance} = \sqrt{\sum{(embedding_1 - embedding_2)^2}}
 $$
 
 where element-wise subtraction was performed on the embeddings, each of these elements were squared, and then element-wise addition was performed before the square root function.
@@ -128,13 +128,13 @@ Using the preferential attachment method, a testing accuracy of only 84.70% was 
 In an attempt to improve on the performance of the previous adjacency-based methods, the Katz measure was implemented. However, this proved to perform even worse, with a testing accuracy of 83.30%. One reason for this is result is likely also due to the lack of high-degree nodes. Since the Katz measure not only considers the number of direct neighbors, but also the number of indirect paths connecting two nodes, with a lack of high-degree nodes in the dataset, it was unable to capture any meaningful long-range connections for link prediction. Furthermore, the Katz measure’s consideration of longer paths between nodes also does not add much useful information for link prediction if the training graph is sparse. To check whether a graph is sparse, the following formula can be used:
 
 $$
-density = \frac{number\ of\ edges\ in\ a\ graph}{maximum\ number\ of\ edges\ possible\ for\ graph}
+\text{density} = \frac{number\ of\ edges\ in\ a\ graph}{maximum\ number\ of\ edges\ possible\ for\ graph}
 $$
 
 where the maximum number of edges for a graph can be calculated by taking $\frac{n(n-1)}{2}$, with $n$ being the number of nodes in the graph. Using this equation, we find that the density for the graph used in this project is:
 
 $$
-density = \frac{4969}{3086370} \approx 0.0016
+\text{density} = \frac{4969}{3086370} \approx 0.0016
 $$
 
 Given that the density for the training graph is extremely small, we can conclude that the graph is sparse and thus the Katz measure is unable to provide stronger performance by considering longer paths between nodes.
